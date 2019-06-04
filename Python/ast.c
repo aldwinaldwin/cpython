@@ -5218,6 +5218,14 @@ fstring_find_expr(const char **str, const char *end, int raw, int recurse_lvl,
         }
     }
 
+    /* Check for [, which puts filename and lineno before expr_text. */
+    if (**str == '[') {
+        *str += 1;
+        char *location = PyUnicode_FromFormat("[%S:%d] ",
+                                              c->c_filename, LINENO(n));
+        *expr_text = PyUnicode_Concat(location, *expr_text);
+    }
+
     /* Check for a conversion char, if present. */
     if (**str == '!') {
         *str += 1;
